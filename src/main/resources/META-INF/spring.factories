@@ -1,0 +1,7 @@
+# Auto Configuration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+t1.example.task4.CustomStartupAnnotationProcessor
+
+# Custom Bean Definitions
+org.springframework.context.annotation.ConfigurationClassPostProcessor=\
+t1.example.task4.aop.LogHTTP
