@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import t1.example.task4.aop.LogHTTP;
@@ -11,7 +12,7 @@ import t1.example.task4.aop.LogHTTP;
 @Component
 @RequiredArgsConstructor
 public class CustomStartupAnnotationProcessor implements BeanPostProcessor {
-
+    private final ApplicationContext applicationContext;
     @Value("${logging.http.enabled}")
     private Boolean loggingHttpEnabled;
     @Value("${logging.http.level}")
@@ -23,10 +24,16 @@ public class CustomStartupAnnotationProcessor implements BeanPostProcessor {
         if (bean.getClass().isAnnotationPresent(LogHTTP.class)) {
             System.out.println("CustomStartupAnnotation detected on class: " + bean.getClass().getSimpleName());
             if (loggingHttpEnabled) {
-                HttpLoggingProperties properties=new HttpLoggingProperties(level);
+                DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
+                boolean isGreatHttpLoggingAutoConfiguration = beanFactory.containsBean("httpLoggingAutoConfiguration");
+                if (!isGreatHttpLoggingAutoConfiguration) {
+                    HttpLoggingProperties properties = new HttpLoggingProperties(level);
+                    HttpLoggingAutoConfiguration httpLoggingAutoConfiguration = new HttpLoggingAutoConfiguration(properties);
+                    // Регистрируем бин в контексте
+                    beanFactory.registerSingleton("httpLoggingAutoConfiguration", httpLoggingAutoConfiguration);
+//                    postProcessBeforeInitialization(httpLoggingAutoConfiguration, "httpLoggingAutoConfiguration");
+                }
 
-                HttpLoggingAutoConfiguration httpLoggingAutoConfiguration = new HttpLoggingAutoConfiguration(properties);
-                return BeanPostProcessor.super.postProcessBeforeInitialization(httpLoggingAutoConfiguration, beanName);
             }
 
 

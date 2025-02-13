@@ -10,8 +10,5 @@ public class DemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
-		Test t = new Test();
-		t.test();
 	}
-
 }
