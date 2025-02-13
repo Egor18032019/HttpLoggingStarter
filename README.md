@@ -1,5 +1,5 @@
 # HttpLoggingStarter
-в проперти должно быть:
+в properties должно быть:
 
 logging.http.enabled=true
 logging.http.level=ERROR
